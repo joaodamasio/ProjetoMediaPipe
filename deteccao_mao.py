@@ -32,7 +32,8 @@ def encontra_coordenadas_maos(img):
     
     #if haven't hands on screen the webcam not to capture
     if resultado.multi_hand_landmarks:
-        for marcacao_maos in resultado.multi_hand_landmarks:
+        #collecting information from side of the hand inside the function
+        for lado_mao, marcacao_maos in zip(resultado.multi_handedness, resultado.multi_hand_landmarks):
             '''storage the coordinates in vars to use in this project, through multi_hand_landmarks
                 identify the pixel position of this reference point'''
                 
@@ -76,3 +77,6 @@ while True:
     if tecla == 27:
         break
     
+    
+
+#return the information from side of the hand
