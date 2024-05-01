@@ -28,22 +28,35 @@ def encontra_coordenadas_maos(img):
     #processing the image with machine learning model
     resultado = maos.process(img_rgb) # -> returns: multi_hand_landmarks, multi_hand_word_landmarks, multi_handedness
     
+    todas_maos = []
+    
     #if haven't hands on screen the webcam not to capture
     if resultado.multi_hand_landmarks:
         for marcacao_maos in resultado.multi_hand_landmarks:
             '''storage the coordinates in vars to use in this project, through multi_hand_landmarks
                 identify the pixel position of this reference point'''
+                
+            #creating a dictionary to storage this coordinates information
+            info_mao = {}
+            #creating a list to storage the coordinates
+            coordenadas = []
+            
             #print(marcacao_maos) -> see how the API returns the coordinates
             for marcacao in marcacao_maos.landmark: #-> accessing each landmark
                 #transforming each coordinate in pixel(int), multiplying the coordinate by resolution
                 coord_x, coord_y, coord_z = int(marcacao.x * resolucao_x), int(marcacao.y * resolucao_y), int(marcacao.z * resolucao_x)
-                
+                coordenadas.append((coord_x, coord_y, coord_z))
+            
+            #storing in dictionary
+            info_mao['coordenadas'] = coordenadas
+            todas_maos.append(info_mao)
+            
             #drawing points in img, the coordinates pointers and the hand connections
             mp_desenho.draw_landmarks(img,
                                     marcacao_maos,
                                     mp_maos.HAND_CONNECTIONS)
             
-    return img
+    return img,todas_maos
 
 #showing the image on screen using a loop while
 while True:
@@ -52,7 +65,7 @@ while True:
     sucesso, img = camera.read() #returns the image in BRG
     
     #calling function
-    img = encontra_coordenadas_maos(img)
+    img,todas_maos = encontra_coordenadas_maos(img)
 
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
