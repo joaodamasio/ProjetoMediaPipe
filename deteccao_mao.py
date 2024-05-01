@@ -78,7 +78,7 @@ while True:
     sucesso, img = camera.read() #returns the image in BRG
     
     #inverting the image
-    img = cv2.flit(img, 1)
+    img = cv2.flip(img, 1)
     
     #calling function
     img,todas_maos = encontra_coordenadas_maos(img)
