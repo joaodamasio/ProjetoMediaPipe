@@ -34,7 +34,7 @@ def encontra_coordenadas_maos(img):
             '''storage the coordinates in vars to use in this project, through multi_hand_landmarks
                 identify the pixel position of this reference point'''
             #print(marcacao_maos) -> see how the API returns the coordinates
-            for marcacao in marcacao_maos.lendmark: #-> accessing each landmark
+            for marcacao in marcacao_maos.landmark: #-> accessing each landmark
                 #transforming each coordinate in pixel(int), multiplying the coordinate by resolution
                 coord_x, coord_y, coord_z = int(marcacao.x * resolucao_x), int(marcacao.y * resolucao_y), int(marcacao.z * resolucao_x)
                 
