@@ -20,12 +20,8 @@ resolucao_y = 720
 camera.set(cv2.CAP_PROP_FRAME_WIDTH, resolucao_x)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolucao_y)
 
-#showing the image on screen using a loop while
-while True:
-    
-    #reading the images by webcam, using function read() that return 2 values
-    sucesso, img = camera.read() #returns the image in BRG
-    
+#creating a function to extract the information of reference points coordinates of hands
+def encontra_coordenadas_maos(img):
     #transforming the images in RGB to the mediapipe to process
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # -> (img to process, type color)
     
@@ -35,10 +31,29 @@ while True:
     #if haven't hands on screen the webcam not to capture
     if resultado.multi_hand_landmarks:
         for marcacao_maos in resultado.multi_hand_landmarks:
+            '''storage the coordinates in vars to use in this project, through multi_hand_landmarks
+                identify the pixel position of this reference point'''
+            #print(marcacao_maos) -> see how the API returns the coordinates
+            for marcacao in marcacao_maos.lendmark: #-> accessing each landmark
+                #transforming each coordinate in pixel(int), multiplying the coordinate by resolution
+                coord_x, coord_y, coord_z = int(marcacao.x * resolucao_x), int(marcacao.y * resolucao_y), int(marcacao.z * resolucao_x)
+                
             #drawing points in img, the coordinates pointers and the hand connections
             mp_desenho.draw_landmarks(img,
                                     marcacao_maos,
                                     mp_maos.HAND_CONNECTIONS)
+            
+    return img
+
+#showing the image on screen using a loop while
+while True:
+    
+    #reading the images by webcam, using function read() that return 2 values
+    sucesso, img = camera.read() #returns the image in BRG
+    
+    #calling function
+    img = encontra_coordenadas_maos(img)
+
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
     
@@ -47,5 +62,4 @@ while True:
     
     if tecla == 27:
         break
-    
     
