@@ -21,7 +21,7 @@ camera.set(cv2.CAP_PROP_FRAME_WIDTH, resolucao_x)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolucao_y)
 
 #creating a function to extract the information of reference points coordinates of hands
-def encontra_coordenadas_maos(img):
+def encontra_coordenadas_maos(img, lado_invertido = False):
     #transforming the images in RGB to the mediapipe to process
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # -> (img to process, type color)
     
@@ -48,8 +48,20 @@ def encontra_coordenadas_maos(img):
                 coord_x, coord_y, coord_z = int(marcacao.x * resolucao_x), int(marcacao.y * resolucao_y), int(marcacao.z * resolucao_x)
                 coordenadas.append((coord_x, coord_y, coord_z))
             
-            #storing in dictionary
+            #creating a dictionary
             info_mao['coordenadas'] = coordenadas
+            
+            #creating a logic to reverse left and right
+            if lado_invertido:
+                if lado_mao.classification[0].label == 'Left':
+                    info_mao['lado'] = 'Right'
+                else:
+                    info_mao['lado'] = 'Left'
+                    
+            else:
+                info_mao['lado'] = lado_mao.classification[0].label
+            
+            #storing in dictionary
             todas_maos.append(info_mao)
             
             #drawing points in img, the coordinates pointers and the hand connections
