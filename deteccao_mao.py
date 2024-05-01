@@ -65,6 +65,9 @@ while True:
     #reading the images by webcam, using function read() that return 2 values
     sucesso, img = camera.read() #returns the image in BRG
     
+    #inverting the image
+    img = cv2.flit(img, 1)
+    
     #calling function
     img,todas_maos = encontra_coordenadas_maos(img)
 
