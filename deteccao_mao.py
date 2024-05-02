@@ -77,11 +77,22 @@ def dedos_levantados(mao):
     '''to extract what fingers are raised\n
         inform the dictionary as a parameter of this function'''
         
-    #creating a list to storage the info if the finger are raised or nou, putting as true or false
+    #creating a list to storage the info if the finger are raised or no, putting as true or false
     dedos = []
+    #comparing wheter the fingertip has a coorinate x lower than the mean of coordinate position of finger
+    if mao['lado'] == 'Right': 
+        if mao['coordenadas'][4][0] < mao['coordenadas'][3][0]:
+            dedos.append(True)
+        else:
+            dedos.append(False)
+    else:
+        if mao['coordenadas'][4][0] > mao['coordenadas'][3][0]:
+            dedos.append(True)
+        else:
+            dedos.append(False)
     
-    #using a for loop, to cycle through each of the fingertip index values ​​which are 8, 12, 16 and 20
-    for ponta_dedo in [8,12,16,20]:
+    #using a for loop, to cycle through each of the fingertip index values ​​which are 4,8, 12, 16 and 20
+    for ponta_dedo in [4,8,12,16,20]:
         #comparing whether the fingertip has a coordinate y lower than the mean of coordinate position of finger
         if mao['coordenadas'][ponta_dedo][1] < mao['coordenadas'][ponta_dedo-2][1]:
             #check if the finger is raising (true: finger raised; false: finger down)
@@ -108,7 +119,7 @@ while True:
     #checking if i only have one hand raised
     if len(todas_maos) == 1:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
-        print(info_dedos_mao1)
+        
 
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
