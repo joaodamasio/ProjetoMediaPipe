@@ -61,6 +61,7 @@ def encontra_coordenadas_maos(img, lado_invertido = False):
             else:
                 info_mao['lado'] = lado_mao.classification[0].label
             
+            
             #storing in dictionary
             todas_maos.append(info_mao)
             
@@ -70,6 +71,27 @@ def encontra_coordenadas_maos(img, lado_invertido = False):
                                     mp_maos.HAND_CONNECTIONS)
             
     return img,todas_maos
+
+#function to find out how many fingers on the hand are raised
+def dedos_levantados(mao):
+    '''to extract what fingers are raised\n
+        inform the dictionary as a parameter of this function'''
+        
+    #creating a list to storage the info if the finger are raised or nou, putting as true or false
+    dedos = []
+    
+    #using a for loop, to cycle through each of the fingertip index values ​​which are 8, 12, 16 and 20
+    for ponta_dedo in [8,12,16,20]:
+        #comparing whether the fingertip has a coordinate y lower than the mean of coordinate position of finger
+        if mao['coordenadas'][ponta_dedo][1] < mao['coordenadas'][ponta_dedo-2][1]:
+            #check if the finger is raising (true: finger raised; false: finger down)
+            dedos.append(True)
+        else:
+            dedos.append(False)
+            
+    return dedos
+
+
 
 #showing the image on screen using a loop while
 while True:
@@ -82,6 +104,11 @@ while True:
     
     #calling function
     img,todas_maos = encontra_coordenadas_maos(img)
+    
+    #checking if i only have one hand raised
+    if len(todas_maos) == 1:
+        info_dedos_mao1 = dedos_levantados(todas_maos[0])
+        print(info_dedos_mao1)
 
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
@@ -93,5 +120,3 @@ while True:
         break
     
     
-
-#return the information from side of the hand
