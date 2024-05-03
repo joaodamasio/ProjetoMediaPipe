@@ -1,6 +1,7 @@
 #import the librarys
 import mediapipe as mp 
 import cv2
+import os
 
 #hands solution to detection
 mp_maos = mp.solutions.hands
@@ -19,6 +20,10 @@ resolucao_x = 1280
 resolucao_y = 720
 camera.set(cv2.CAP_PROP_FRAME_WIDTH, resolucao_x)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolucao_y)
+#creating a var to support that inform if the file is open or closed (and not open the file in loop)
+bloco_notas = False
+chrome = False
+spotify = False
 
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
@@ -92,7 +97,7 @@ def dedos_levantados(mao):
             dedos.append(False)
     
     #using a for loop, to cycle through each of the fingertip index values ​​which are 4,8, 12, 16 and 20
-    for ponta_dedo in [4,8,12,16,20]:
+    for ponta_dedo in [8,12,16,20]:
         #comparing whether the fingertip has a coordinate y lower than the mean of coordinate position of finger
         if mao['coordenadas'][ponta_dedo][1] < mao['coordenadas'][ponta_dedo-2][1]:
             #check if the finger is raising (true: finger raised; false: finger down)
@@ -101,8 +106,6 @@ def dedos_levantados(mao):
             dedos.append(False)
             
     return dedos
-
-
 
 #showing the image on screen using a loop while
 while True:
@@ -119,7 +122,42 @@ while True:
     #checking if i only have one hand raised
     if len(todas_maos) == 1:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
+        #to open the files the left hand should raised
+        if todas_maos[0]['lado'] == 'Left':
         
+            #if the index finger is raised the code will open the block note
+            if info_dedos_mao1 == [False, True, False, False, False] and bloco_notas == False:
+                bloco_notas = True
+                os.startfile(r'C:\Windows\system32\notepad.exe')
+            
+            #if the index finger is raised the code will open the chrome
+            if info_dedos_mao1 == [False, True,  True, False, False] and chrome == False:
+                chrome = True
+                os.startfile(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+                
+            #if the index finger is raised the code will open the spotify
+            if info_dedos_mao1 == [False, True, True, True, False] and spotify == False:
+                spotify = True
+                os.startfile(r"C:\Users\joaov\AppData\Roaming\Spotify\Spotify.exe")
+                
+            #closing the notepad
+            if info_dedos_mao1 == [False, False,False,False, False] and bloco_notas == True:
+                bloco_notas = False
+                os.system('TASKKILL  /IM notepad.exe')
+            
+            #closing the chrome    
+            if info_dedos_mao1 == [False, True, True, True, True] and chrome == True:
+                chrome = False
+                os.system('TASKKILL /IM chrome.exe')
+                
+            #closing the spotify
+            if info_dedos_mao1 == [True, False, False, False, True] and spotify == True:
+                spotify = False
+                os.system('TASKKILL /IM Spotify.exe')
+                
+            #closing the program
+            if info_dedos_mao1 == [False, True, False, False, True]:
+                break
 
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
@@ -130,4 +168,7 @@ while True:
     if tecla == 27:
         break
     
+    
+    
+
     
