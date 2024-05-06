@@ -31,6 +31,13 @@ camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolucao_y)
 bloco_notas = False
 chrome = False
 spotify = False
+#creating a list with all letters 
+teclas = [['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A','S','D','F','G','H','J','K','L'],
+            ['Z','X','C','V','B','N','M', ',','.',' ']]
+
+offset = 50
+
 
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
@@ -84,6 +91,7 @@ def encontra_coordenadas_maos(img, lado_invertido = False):
             
     return img,todas_maos
 
+
 #function to find out how many fingers on the hand are raised
 def dedos_levantados(mao):
     '''to extract what fingers are raised\n
@@ -114,6 +122,24 @@ def dedos_levantados(mao):
             
     return dedos
 
+#define the function for creating keys
+def imprime_botoes(img, posicao, letra, tamanho = 50, cor_retangulo = BRANCO):
+    """show buttons
+
+    Args:
+        img (array): img captured by webcam
+        posicao (list): coord x,y,z
+        letra (str): letter of keyboard
+        tamanho (int, optional): size of rectangle. Defaults to 50.
+        cor_retangulo (tuple, optional): color of rectangle. Defaults to BRANCO.
+    """
+    #using function rectangle to do draw in keyboard
+    cv2.rectangle(img, posicao, (posicao[0]+ tamanho, posicao[1]+tamanho),cor_retangulo, cv2.FILLED)
+    cv2.rectangle(img, posicao, (posicao[0]+ tamanho, posicao[1]+tamanho),AZUL, 1)
+    #utilizing a function putText to writ the text on keyboard
+    cv2.putText(img, letra, (posicao[0]+15, posicao[1]+30), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
+    return img
+
 #showing the image on screen using a loop while
 while True:
     
@@ -126,17 +152,17 @@ while True:
     #calling function
     img,todas_maos = encontra_coordenadas_maos(img)
     
-    #using function rectangle to do draw in keyboard
-    cv2.rectangle(img, (50,50), (100,100),BRANCO, cv2.FILLED)
-    
-    #utilizing a function putText to writ the text on keyboard
-    cv2.putText(img, 'Q', (65, 85), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
     #checking if i only have one hand raised
     if len(todas_maos) == 1:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
+        #adding conditional to appear the keyboard if the right is raised
+        if todas_maos[0]['lado'] == 'Right':
+            for indice_linha, linha_teclado in enumerate(teclas):
+                for indice, letra in enumerate(linha_teclado):
+                    img = imprime_botoes(img, (offset+indice*80, offset + indice_linha*80), letra)
+                    
         #to open the files the left hand should raised
         if todas_maos[0]['lado'] == 'Left':
-        
             #if the index finger is raised the code will open the block note
             if info_dedos_mao1 == [False, True, False, False, False] and bloco_notas == False:
                 bloco_notas = True
