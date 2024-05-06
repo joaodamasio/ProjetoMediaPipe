@@ -3,6 +3,13 @@ import mediapipe as mp
 import cv2
 import os
 
+#writing all constants of colors that will be utilize
+BRANCO = (255,255,255)
+PRETO = (0,0,0)
+AZUL = (255,0,0)
+VERDE = (0,255,0)
+VERMELHO = (0,0,255)
+AZUL_CLARO = (255,255,0)
 #hands solution to detection
 mp_maos = mp.solutions.hands
 #draw solution
@@ -119,6 +126,11 @@ while True:
     #calling function
     img,todas_maos = encontra_coordenadas_maos(img)
     
+    #using function rectangle to do draw in keyboard
+    cv2.rectangle(img, (50,50), (100,100),BRANCO, cv2.FILLED)
+    
+    #utilizing a function putText to writ the text on keyboard
+    cv2.putText(img, 'Q', (65, 85), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
     #checking if i only have one hand raised
     if len(todas_maos) == 1:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
