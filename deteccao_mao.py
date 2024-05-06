@@ -37,7 +37,8 @@ teclas = [['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
             ['Z','X','C','V','B','N','M', ',','.',' ']]
 
 offset = 50
-
+contador = 0
+texto = '>'
 
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
@@ -157,10 +158,34 @@ while True:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
         #adding conditional to appear the keyboard if the right is raised
         if todas_maos[0]['lado'] == 'Right':
+            #to extract the coord of index finger
+            indicador_x, indicador_y, indicador_z =  todas_maos[0]['coordenadas'][8]
+            
+            #to show coordinate z
+            cv2.putText(img, f'Distancia camera: {indicador_z}', (850, 50), cv2.FONT_HERSHEY_COMPLEX, 1, BRANCO, 2)
             for indice_linha, linha_teclado in enumerate(teclas):
                 for indice, letra in enumerate(linha_teclado):
+                    if sum(info_dedos_mao1) <= 1:
+                        letra = letra.lower()
                     img = imprime_botoes(img, (offset+indice*80, offset + indice_linha*80), letra)
                     
+                    #to see if the coordinates of index finger are positioned in keyboard region
+                    if offset + indice*80 < indicador_x < 100+indice * 80 and offset + indice_linha*80 < indicador_y< 100 +indice_linha*80:
+                        #add green color the selected key
+                        img = img = imprime_botoes(img, (offset+indice*80, offset + indice_linha*80), letra, cor_retangulo=VERDE)
+                        
+                        if indicador_z < - 85:
+                            #to create a count as a way to digitalize the keyboard
+                            contador = 1
+                            escreve = letra
+                            img = img = imprime_botoes(img, (offset+indice*80, offset + indice_linha*80), letra, cor_retangulo=AZUL_CLARO)
+            if contador:
+                contador+=1
+                if contador == 3:
+                    texto += escreve
+                    contador = 0
+                    
+                        
         #to open the files the left hand should raised
         if todas_maos[0]['lado'] == 'Left':
             #if the index finger is raised the code will open the block note
