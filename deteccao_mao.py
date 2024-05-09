@@ -4,6 +4,7 @@ import cv2
 import os
 from time import sleep
 from pynput.keyboard import Controller
+from pynput.keyboard import Key
 
 #writing all constants of colors that will be utilize
 BRANCO = (255,255,255)
@@ -195,6 +196,7 @@ while True:
             #to check if the little finger is raised and the text has at least one character
             if info_dedos_mao1 == [False, False, False, False, True] and len(texto) > 1:
                 texto = texto[:-1]
+                teclado.press(Key.backspace)
                 sleep(0.15)
             
             #to create a session where will be show the text that we are typing using a function rectangle
