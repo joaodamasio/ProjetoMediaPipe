@@ -2,6 +2,8 @@
 import mediapipe as mp 
 import cv2
 import os
+from time import sleep
+from pynput.keyboard import Controller
 
 #writing all constants of colors that will be utilize
 BRANCO = (255,255,255)
@@ -39,6 +41,10 @@ teclas = [['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
 offset = 50
 contador = 0
 texto = '>'
+
+#creating keyboard
+teclado = Controller()
+
 
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
@@ -157,7 +163,7 @@ while True:
     if len(todas_maos) == 1:
         info_dedos_mao1 = dedos_levantados(todas_maos[0])
         #adding conditional to appear the keyboard if the right is raised
-        if todas_maos[0]['lado'] == 'Right':
+        if todas_maos[0]['lado'] == 'Left':
             #to extract the coord of index finger
             indicador_x, indicador_y, indicador_z =  todas_maos[0]['coordenadas'][8]
             
@@ -184,10 +190,24 @@ while True:
                 if contador == 3:
                     texto += escreve
                     contador = 0
+                    teclado.press(escreve)
                     
-                        
+            #to check if the little finger is raised and the text has at least one character
+            if info_dedos_mao1 == [False, False, False, False, True] and len(texto) > 1:
+                texto = texto[:-1]
+                sleep(0.15)
+            
+            #to create a session where will be show the text that we are typing using a function rectangle
+            cv2.rectangle(img, (offset, 450), (830, 500), BRANCO, cv2.FILLED)
+            cv2.rectangle(img, (offset, 450), (830, 500), AZUL, 1)
+            
+            #to put the text with a function putText
+            cv2.putText(img, texto[-40:], (offset, 480), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
+            #to add a circle in the finger tip
+            cv2.circle(img, (indicador_x, indicador_y), 7, AZUL, cv2.FILLED)
+            
         #to open the files the left hand should raised
-        if todas_maos[0]['lado'] == 'Left':
+        if todas_maos[0]['lado'] == 'Right':
             #if the index finger is raised the code will open the block note
             if info_dedos_mao1 == [False, True, False, False, False] and bloco_notas == False:
                 bloco_notas = True
@@ -231,7 +251,11 @@ while True:
     if tecla == 27:
         break
     
-    
-    
+#saving in a file the text typed
+with open('text.txt', 'w') as arquivo:
+    arquivo.write(texto)
+
+
+
 
     
