@@ -5,6 +5,7 @@ import os
 from time import sleep
 from pynput.keyboard import Controller
 from pynput.keyboard import Key
+import numpy as np
 
 #writing all constants of colors that will be utilize
 BRANCO = (255,255,255)
@@ -46,6 +47,8 @@ texto = '>'
 #creating keyboard
 teclado = Controller()
 
+#creating a whiteboard
+img_quadro = np.ones((resolucao_y, resolucao_x, 3), np.uint8)*255
 
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
@@ -243,10 +246,20 @@ while True:
             #closing the program
             if info_dedos_mao1 == [False, True, False, False, True]:
                 break
-
+    
+    #constructing the logic of how to draw
+    if len(todas_maos) == 2:
+        #creating two var, one for each hand
+        info_dedos_mao1 = dedos_levantados(todas_maos[0])
+        info_dedos_mao2 = dedos_levantados(todas_maos[1])
+    
+        #taking the coordinates of the finger index
+        indicador_x,indicador_y,indicador_z = todas_maos[0]['coordenadas'][8]
+    
+    
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
-    
+    cv2.imshow('Quadro', img_quadro)
     #taking the frame of image
     tecla = cv2.waitKey(1)
     
@@ -257,7 +270,6 @@ while True:
 with open('text.txt', 'w') as arquivo:
     arquivo.write(texto)
 
+#to store the image
+cv2.imwrite('quadro.png', img_quadro)
 
-
-
-    
