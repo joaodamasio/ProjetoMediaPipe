@@ -280,6 +280,12 @@ while True:
 
         #add change in brush thickness according to a formula
         espessura_pincel = int(abs(indicador_z))//3 + 5
+        if indicador_z <= 40:
+            espessura_pincel = 30
+        elif indicador_z<=-30:
+            espessura_pincel = 20
+        else:
+            espessura_pincel = 10
         
         
         #add visualization on the tip of the index finger
