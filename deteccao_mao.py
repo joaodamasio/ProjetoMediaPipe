@@ -53,6 +53,9 @@ img_quadro = np.ones((resolucao_y, resolucao_x, 3), np.uint8)*255
 #creating a variable to store the brush color
 cor_pincel = (255,255,0)
 
+#create two variables to store the initial position of the line point
+x_quadro, y_quadro = 0, 0
+
 #creating variable brush thickness
 espessura_pincel = 7
 
@@ -290,6 +293,19 @@ while True:
         
         #add visualization on the tip of the index finger
         cv2.circle(img, (indicador_x, indicador_y), espessura_pincel, cor_pincel, cv2.FILLED)
+        
+        #check if the index finger is raised, if so change the initial position to the value of the index finger coordinate
+        if info_dedos_mao1 == [False, True, False, False, False]:
+            if x_quadro == 0 and y_quadro == 0:
+                x_quadro, y_quadro = indicador_x, indicador_y
+                
+            #drawing a line
+            cv2.line(img_quadro, (x_quadro,y_quadro), (indicador_x,indicador_y), cor_pincel, espessura_pincel)
+            x_quadro, y_quadro = indicador_x, indicador_y
+        else:
+            x_quadro, y_quadro = 0, 0
+        
+        img = cv2.addWeighted(img, 1, img_quadro, 0.2, 0)
     
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
@@ -306,4 +322,5 @@ with open('text.txt', 'w') as arquivo:
 
 #to store the image
 cv2.imwrite('quadro.png', img_quadro)
+
 
