@@ -50,6 +50,12 @@ teclado = Controller()
 #creating a whiteboard
 img_quadro = np.ones((resolucao_y, resolucao_x, 3), np.uint8)*255
 
+#creating a variable to store the brush color
+cor_pincel = (255,255,0)
+
+#creating variable brush thickness
+espessura_pincel = 7
+
 #creating a function to extract the information of reference points coordinates of hands
 def encontra_coordenadas_maos(img, lado_invertido = False):
     #transforming the images in RGB to the mediapipe to process
@@ -255,7 +261,29 @@ while True:
     
         #taking the coordinates of the finger index
         indicador_x,indicador_y,indicador_z = todas_maos[0]['coordenadas'][8]
-    
+        
+        #creating conditional to check fingers and change brush color
+        if sum(info_dedos_mao2) == 1:
+            cor_pincel = AZUL
+        elif sum(info_dedos_mao2) == 2:
+            cor_pincel = VERDE
+        elif sum(info_dedos_mao2) == 3:
+            cor_pincel = VERMELHO
+        elif sum(info_dedos_mao2) == 4:
+            cor_pincel = AZUL_CLARO
+        elif sum(info_dedos_mao2) == 5:
+            cor_pincel = BRANCO
+            
+        #add functionality to erase everything on the board
+        else:
+            img_quadro = np.ones((resolucao_y, resolucao_x, 3), np.uint8)*255
+
+        #add change in brush thickness according to a formula
+        espessura_pincel = int(abs(indicador_z))//3 + 5
+        
+        
+        #add visualization on the tip of the index finger
+        cv2.circle(img, (indicador_x, indicador_y), espessura_pincel, cor_pincel, cv2.FILLED)
     
     #showing image, inputting the name of the screen and input the image
     cv2.imshow('Imagem', img)
